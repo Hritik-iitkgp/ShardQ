@@ -5,7 +5,27 @@ app = Flask(__name__)
 
 @app.route('/config', methods=['POST'])
 def config():
-    pass
+    try:
+        payload = request.get_json()
+
+        # Extract schema and shards information from the payload
+        schema = payload['schema']
+        shards = payload['shards']
+
+        # Initialize shards
+
+        response = {
+            "message": f"Server{os.getenv('SERVER_ID')}:{', '.join(shards)} configured",
+            "status": "success"
+        }
+        return jsonify(response), 200
+
+    except Exception as e:
+        response = {
+            "message": str(e),
+            "status": "error"
+        }
+        return jsonify(response), 500
 
 @app.route('/heartbeat', methods=['GET'])
 def heartbeat():
@@ -16,7 +36,24 @@ def heartbeat():
 
 @app.route('/copy', methods=['GET'])
 def copy():
-    pass
+    try:
+        payload = request.get_json()
+        shards_to_copy = payload['shards']
+        # 
+       
+
+        response = {
+            # need to add ,
+            "status": "success"
+        }
+        return jsonify(response), 200
+
+    except Exception as e:
+        response = {
+            "message": str(e),
+            "status": "error"
+        }
+        return jsonify(response), 500
 
 @app.route('/read', methods=['POST'])
 def read():
