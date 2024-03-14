@@ -1,7 +1,17 @@
 from flask import Flask, jsonify, request
 import os
-
+import mysql.connector
 app = Flask(__name__)
+
+# Function to create MySQL connection
+def create_mysql_connection():
+    return mysql.connector.connect(
+        host='localhost',
+        user="giri",
+        password="shard1",
+        database="StudentDB"
+    )
+conn = create_mysql_connection()
 
 @app.route('/config', methods=['POST'])
 def config():
@@ -13,7 +23,23 @@ def config():
         shards = payload['shards']
 
         # Initialize shards
+        # Create MySQL connection
+        global conn
+        cursor = conn.cursor()
 
+        # Create tables for each shard
+        for shard in shards:
+            table_name = f"StudT_{shard}"
+            create_table_query = f"CREATE TABLE IF NOT EXISTS {table_name} ("
+            for column, dtype in zip(schema['columns'], schema['dtypes']):
+                create_table_query += f"{column} {dtype}, "
+                create_table_query = create_table_query.rstrip(', ') + ")"
+                cursor.execute(create_table_query)
+                conn.commit()
+
+            # Close cursor and connection
+        cursor.close()
+        conn.close()
         response = {
             "message": f"Server{os.getenv('SERVER_ID')}:{', '.join(shards)} configured",
             "status": "success"
@@ -40,12 +66,23 @@ def copy():
         payload = request.get_json()
         shards_to_copy = payload['shards']
         # 
-       
-
+        global conn
+        cursor = conn.cursor()
         response = {
             # need to add ,
             "status": "success"
         }
+        for shard in shards_to_copy:
+            table_name = f"StudT_{shard}"
+            query = f"SELECT * FROM {table_name}"
+            cursor.execute(query)
+            shard_data = cursor.fetchall()
+            response[shard] = shard_data
+
+        # Close cursor
+        cursor.close()
+
+        # Add status to response data
         return jsonify(response), 200
 
     except Exception as e:
@@ -61,14 +98,20 @@ def read():
         payload = request.get_json()
         shard_id = payload['shard']
         stud_id_range = payload['Stud_id']
-
+        global conn
         # Extract low and high values from the range
         low = stud_id_range['low']
         high = stud_id_range['high']
-
+        cursor = conn.cursor(dictionary=True)
         # Retrieve the requested data 
-        
+        data=[]
+        table_name = f"StudT_{shard_id}"
+        query = f"SELECT * FROM {table_name} WHERE Stud_id BETWEEN {low} AND {high}"
+        cursor.execute(query)
+        data = cursor.fetchall()
 
+        # Close cursor
+        cursor.close()
         response = {
             "data": data,
             "status": "success"
@@ -91,10 +134,23 @@ def write():
         data_entries = payload['data']
 
         # wrtite 
+        cursor = conn.cursor(dictionary=True)
+        columns = list(data_entries[0].keys())
+        column_names = ", ".join(columns)
+        placeholders = ", ".join(["%s" for _ in columns])
+        # Insert data into the shard table
+        table_name = f"StudT_{shard_id}"
+        insert_query = f"INSERT INTO {table_name} ({column_names}) VALUES ({placeholders})"
+        insert_values = [[entry[column] for column in columns] for entry in data_entries]
+        cursor.executemany(insert_query, insert_values)
+
+        # Commit changes
+        conn.commit()        
+        new_idx = curr_idx + len(data_entries)
 
         response = {
             "message": "Data entries added",
-            "current_idx": ,
+            "current_idx": new_idx,
             "status": "success"
         }
         return jsonify(response), 200
@@ -109,13 +165,28 @@ def write():
 @app.route('/update', methods=['PUT'])
 def update():
     try:
+        global conn
         payload = request.get_json()
         shard_id = payload['shard']
         stud_id = payload['Stud_id']
         updated_data = payload['data']
 
-      # perform updates
+        # Create MySQL cursor
+        cursor = conn.cursor(dictionary=True)
 
+        # Update data entry in the shard table
+        table_name = f"StudT_{shard_id}"
+        update_query = f"UPDATE {table_name} SET "
+        update_query += ", ".join([f"{column}=%s" for column in updated_data.keys()])
+        update_query += " WHERE Stud_id = %s"
+        update_values = list(updated_data.values()) + [stud_id]
+        cursor.execute(update_query, update_values)
+
+        # Commit changes
+        conn.commit()
+
+        # Close cursor
+        cursor.close()
         response = {
             "message": f"Data entry for Stud_id:{stud_id} updated",
             "status": "success"
@@ -137,7 +208,20 @@ def delete():
         stud_id = payload['Stud_id']
 
         # Remove the data entry 
+        # Create MySQL cursor
+        global conn
+        cursor = conn.cursor(dictionary=True)
 
+        # Delete data entry from the shard table
+        table_name = f"StudT_{shard_id}"
+        delete_query = f"DELETE FROM {table_name} WHERE Stud_id = %s"
+        cursor.execute(delete_query, (stud_id,))
+
+        # Commit changes
+        conn.commit()
+
+        # Close cursor
+        cursor.close()
         response = {
             "message": f"Data entry with Stud_id:{stud_id} removed",
             "status": "success"
