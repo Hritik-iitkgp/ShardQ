@@ -6,7 +6,7 @@ RUN apt-get install -y \
 RUN pip install --break-system-packages --upgrade  pip
 COPY server.py deploy.sh requirements.txt           /docker-entrypoint-initdb.d/
 RUN pip install --break-system-packages -r  /docker-entrypoint-initdb.d/requirements.txt
-ENV MYSQL_ROOT_PASSWORD="rootFFF"
+ENV MYSQL_ROOT_PASSWORD="shard1"
 ENV MYSQL_USER="giri"
 ENV MYSQL_PASSWORD="shard1"
 ENV MYSQL_DATABASE="StudentDB"
