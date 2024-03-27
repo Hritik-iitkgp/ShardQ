@@ -50,7 +50,7 @@ def config():
         # Close cursor and connection
         cursor.close()
         response = {
-            "message": f"Server{os.getenv('SERVER_ID')}:{', '.join(shards)} configured",
+            "message": f"Server:{', '.join(shards)} configured",
             "status": "success"
         }
         return jsonify(response), 200
