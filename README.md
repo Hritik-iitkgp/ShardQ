@@ -52,7 +52,7 @@ The distributed database system manages data entries in a sharded manner across 
 - **Output for A-1**:
   - **Time taken for 10000 write requests:** 627.26 seconds 
   - ****Time taken for 10000 read requests:** 193.95 seconds
- - **Output for A-2**:
+- **Output for A-2**:
   - **Time taken for 10000 write requests:** 985.15 seconds 
   - ****Time taken for 10000 read requests:** 190.65 seconds
 - **Output for A-3**:
