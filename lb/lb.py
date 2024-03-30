@@ -770,7 +770,12 @@ def respawn(server_id):
                     except Exception as e:
                         # print("retrying")
                         continue
+
         for sh in dead_server_shards:
+
+            hashmaps[sh].add_server_instance(new_server)
+            hashmaps[sh].remove_server_instance(server_id)
+
             cursor.execute("SELECT Server_id FROM MapT WHERE Shard_id=?",(sh,))
             row = cursor.fetchone()
             sh_server = row[0]
