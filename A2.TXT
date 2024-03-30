@@ -1,7 +1,7 @@
 OUTPUT FOR A-2:- 
 
 Testing write requests...
-Time taken for 10000 write requests: 924.8931086063385 seconds
+Time taken for 10000 write requests: 985.1547203063965 seconds
 
 Testing read requests...
-Time taken for 10000 read requests: 192.89966702461243 seconds
+Time taken for 10000 read requests: 190.65168285369873 seconds

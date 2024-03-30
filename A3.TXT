@@ -1,7 +1,7 @@
 OUTPUT FOR A-3:- 
 
 Testing write requests...
-Time taken for 10000 write requests: 1224.835194826126 seconds
+Time taken for 10000 write requests: 1279.1416902542114 seconds
 
 Testing read requests...
-Time taken for 10000 read requests: 183.91846752166748 seconds
+Time taken for 10000 read requests: 191.15239262580872 seconds
