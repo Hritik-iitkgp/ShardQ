@@ -49,6 +49,15 @@ The distributed database system manages data entries in a sharded manner across 
 - **Task A-2:** Increase Shard Replicas Performance Analysis: Increase the number of shard replicas and measure the write speed for 10,000 writes and read speed for 10,000 reads.
 - **Task A-3:** Increase Servers and Shards Performance Analysis: Increase the number of servers and shards, and measure the write speed for 10,000 writes and read speed for 10,000 reads.
 - **Task A-4:** Endpoint Check and Container Dropping: Verify the correctness of all endpoints and simulate dropping a server container to observe the load balancer behavior.
+- **Output for A-1**:
+  - **Time taken for 10000 write requests:** 627.26 seconds 
+  - ****Time taken for 10000 read requests:** 193.95 seconds
+ - **Output for A-2**:
+  - **Time taken for 10000 write requests:** 985.15 seconds 
+  - ****Time taken for 10000 read requests:** 190.65 seconds
+- **Output for A-3**:
+  - **Time taken for 10000 write requests:** 1279.14 seconds 
+  - ****Time taken for 10000 read requests:** 191.15 seconds
 
 ## Setup Instructions
 
